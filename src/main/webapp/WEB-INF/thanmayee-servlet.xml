@@ -1,16 +1,92 @@
+/**
+ * Spring MVC and Hibernate Configuration File
+ * This XML file configures the core components needed for Spring MVC and Hibernate integration.
+ */
 <?xml version="1.0" encoding="UTF-8"?>
 
+/**
+ * Root beans element with necessary XML schema definitions for Spring contexts:
+ * - xmlns: Default Spring beans namespace
+ * - ctx: Spring context namespace for component scanning
+ * - tx: Transaction management namespace
+ * - xsi: XML Schema Instance namespace
+ */
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:ctx="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+http://www.springframework.org/schema/beans/spring-beans.xsd
 http://www.springframework.org/schema/context
-http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+http://www.springframework.org/schema/context/spring-context.xsd
+http://www.springframework.org/schema/tx
+http://www.springframework.org/schema/tx/spring-tx.xsd">
 
+    /**
+     * Component scanning configuration:
+     * - Enables automatic detection of Spring components in the specified package
+     * - Activates Spring annotations like @Component, @Service, @Repository, etc.
+     */
     <ctx:component-scan base-package="com.thanmayee.springhibernate"/>
     <ctx:annotation-config/>
 
+    /**
+     * Database Connection Pool Configuration:
+     * - Uses HikariCP connection pooling for high-performance database connection management
+     * - Configures MySQL database connection properties
+     * - Sets connection pool parameters for optimal performance
+     * - HikariCP is known for being lightweight and fast compared to other connection pools
+     */
+    <bean id="myDataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/mydatabase"/>
+        <property name="username" value="root"/>
+        <property name="password" value="password"/>
+        
+        <!-- HikariCP specific properties -->
+        <property name="minimumIdle" value="5"/>
+        <property name="maximumPoolSize" value="10"/>
+        <property name="idleTimeout" value="30000"/>
+        <property name="poolName" value="SpringHibernateHikariCP"/>
+        <property name="connectionTimeout" value="20000"/>
+    </bean>
+
+    /**
+     * Hibernate Session Factory Configuration:
+     * - Creates and configures the Hibernate SessionFactory
+     * - Specifies the package to scan for entity classes
+     * - Sets Hibernate-specific properties like dialect and DDL behavior
+     * - Enables SQL query logging for debugging
+     */
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+        <property name="dataSource" ref="myDataSource" />
+        <property name="packagesToScan" value="com.thanmayee.springhibernate.model" />
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+                <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
+            </props>
+        </property>  
+    </bean>
+
+    /**
+     * Transaction Manager Configuration:
+     * - Manages database transactions using Hibernate
+     * - Enables declarative transaction management with @Transactional annotation
+     */
+    <bean id="myTransactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
+    <tx:annotation-driven transaction-manager="myTransactionManager" />
+
+    /**
+     * View Resolver Configuration:
+     * - Configures the JSP view resolver
+     * - Maps logical view names to actual JSP files
+     * - Automatically adds prefix and suffix to view names
+     */
     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="prefix" value="/WEB-INF/views/"/>
         <property name="suffix" value=".jsp"/>

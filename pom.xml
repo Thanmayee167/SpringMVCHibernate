@@ -9,50 +9,165 @@
   <name>springhibernate Maven Webapp</name>
   <url>http://maven.apache.org</url>
   
-  <properties>
-    <maven.compiler.source>17</maven.compiler.source>
-    <maven.compiler.target>17</maven.compiler.target>
-    <spring.version>6.2.3</spring.version>
-    <jakarta.version>10.0.0</jakarta.version>
-  </properties>
+    <properties>
+        <!-- Java version for source and target compilation -->
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <!-- Centralized version management for Spring and Hibernate -->
+        <spring.version>6.2.3</spring.version>
+        <hibernate.version>6.4.4.Final</hibernate.version>
+        <!-- Character encoding settings -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    </properties>
   
-  <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
-    </dependency>
+    <dependencies>
+        <!-- 
+            JUnit Jupiter (JUnit 5) for unit testing
+            - Used for writing and running unit tests for controllers, DAOs, and services
+            - Scope is 'test' so it's only available during testing
+            - Required for TDD (Test Driven Development) practices
+        -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.10.2</version>
+            <scope>test</scope>
+        </dependency>
     
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-webmvc</artifactId>
-      <version>${spring.version}</version>
-    </dependency>
+        <!-- Spring Framework Dependencies -->
+        <!-- 
+            Spring Web MVC
+            - Core framework for building web applications
+            - Provides @Controller, @RequestMapping annotations used in HomeController
+            - Handles HTTP requests and responses
+            - Manages view resolution for JSP pages
+        -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <!-- 
+            Spring ORM
+            - Integrates Spring with Hibernate
+            - Provides transaction management
+            - Used in AlienDao for database operations
+            - Manages Hibernate SessionFactory
+        -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-orm</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <!-- 
+            Spring Transaction
+            - Handles database transactions
+            - Provides @Transactional annotation
+            - Ensures data consistency in database operations
+            - Used with AlienDao for CRUD operations
+        -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
     
-    <dependency>
-      <groupId>jakarta.servlet</groupId>
-      <artifactId>jakarta.servlet-api</artifactId>
-      <version>6.0.0</version>
-      <scope>provided</scope>
-    </dependency>
-    
-    <dependency>
-      <groupId>jakarta.servlet.jsp</groupId>
-      <artifactId>jakarta.servlet.jsp-api</artifactId>
-      <version>3.1.1</version>
-      <scope>provided</scope>
-    </dependency>
-  </dependencies>
+        <!-- Jakarta EE Dependencies -->
+        <!-- 
+            Jakarta Servlet API
+            - Core API for handling HTTP requests/responses
+            - Required for web application development
+            - Provided by the servlet container (e.g., Tomcat)
+            - Used by Spring MVC under the hood
+        -->
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>6.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- 
+            Jakarta Server Pages API
+            - Required for JSP page compilation
+            - Provided by the servlet container
+            - Used for your view layer (JSP pages)
+            - Enables dynamic web page generation
+        -->
+        <dependency>
+            <groupId>jakarta.servlet.jsp</groupId>
+            <artifactId>jakarta.servlet.jsp-api</artifactId>
+            <version>3.1.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- 
+            JSTL Implementation
+            - Provides JSP Standard Tag Library
+            - Used in JSP pages for common tasks (loops, conditions, formatting)
+            - Makes JSP pages more maintainable
+            - Implementation includes the API automatically
+        -->
+        <dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>jakarta.servlet.jsp.jstl</artifactId>
+            <version>3.0.1</version>
+        </dependency>
+
+        <!-- Hibernate Dependencies -->
+        <!-- 
+            Hibernate Core
+            - ORM framework for database operations
+            - Maps Java objects (Alien class) to database tables
+            - Provides Session, SessionFactory for database interaction
+            - Used by AlienDao for database operations
+        -->
+        <dependency>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>${hibernate.version}</version>
+        </dependency>
+        <!-- 
+            Jakarta Persistence API
+            - Standard ORM specification
+            - Provides @Entity, @Id, and other mapping annotations
+            - Used in your entity classes (Alien)
+            - Makes code portable across different ORM implementations
+        -->
+        <dependency>
+            <groupId>jakarta.persistence</groupId>
+            <artifactId>jakarta.persistence-api</artifactId>
+            <version>3.1.0</version>
+        </dependency>
+
+        <!-- Database Dependencies -->
+        <!-- 
+            MySQL Connector/J
+            - JDBC driver for MySQL database
+            - Required for connecting to MySQL database
+            - Handles database protocol and communication
+            - Used by Hibernate for database operations
+        -->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <version>8.3.0</version>
+        </dependency>
+        <!-- 
+            HikariCP Connection Pool
+            - High-performance JDBC connection pooling
+            - Manages database connections efficiently
+            - Reduces database connection overhead
+            - Improves application performance
+        -->
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>5.1.0</version>
+        </dependency>
+    </dependencies>
   
   <build>
     <finalName>springhibernate</finalName>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-war-plugin</artifactId>
-        <version>3.3.2</version>
-      </plugin>
-    </plugins>
+    
   </build>
 </project>
